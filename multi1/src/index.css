@@ -29,6 +29,8 @@ code {
   flex-direction: column;
   align-items: center;
   margin: 20px;
+
+
 }
 
 .cerc {
@@ -52,6 +54,7 @@ code {
 
 .children {
   display: flex; 
+  justify-content: center;
   background-color: #e8f5e9;
   padding: 10px;
   margin-top: 10px;
@@ -59,6 +62,19 @@ code {
   border-radius: 5px;
   gap: 20px; 
 }
+
+.status-active {
+  color: green;
+}
+
+.status-inactive {
+  color: red;
+}
+
+.status-paused {
+  color: orange;
+}
+
 
 
 

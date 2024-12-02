@@ -2,14 +2,43 @@ import React, { useEffect } from "react";
 import "../index.css";
 import { useState } from "react";
 
+const fetchDropdown = () => {
+  //simulez fetch
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(["inactive", "active", "running", "paused"]);
+    }, 500);
+  });
+};
+
 const Tree = React.memo(({ nodeData, handleUpdate, parentNode }) => {
   let [status, setStatus] = useState(nodeData.status);
   //let [children, setChildren] = useState(nodeData.chil);
+  const [options, setOptions] = useState([]);
+
+  const getStatusClass = (status) => {
+    switch (status) {
+      case "active":
+        return "status-active";
+      case "paused":
+        return "status-paused";
+      case "inactive":
+        return "status-inactive";
+      default:
+        return "";
+    }
+  };
 
   useEffect(() => {
     setStatus(nodeData.status);
     //setChildren(nodeData.chil);
   }, [nodeData.status]);
+
+  useEffect(() => {
+    fetchDropdown().then((fetchedOptions) => {
+      setOptions(fetchedOptions);
+    });
+  }, []);
 
   const handleStatusChange = (newStatus) => {
     //doar daca exista status nou
@@ -71,16 +100,29 @@ const Tree = React.memo(({ nodeData, handleUpdate, parentNode }) => {
   return (
     <div className="node">
       <div className="cerc">
-        {nodeData.id}
-        <input
+        <div className={getStatusClass(nodeData.status)}>{nodeData.status}</div>{" "}
+        {options.length > 0 ? (
+          <select
+            value={status}
+            onChange={(event) => handleStatusChange(event.target.value)}
+          >
+            {options.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <div>Loading options..</div>
+        )}
+        {/* <input
           type="text"
           value={status}
           onInput={(event) => {
             handleStatusChange(event.target.value);
           }}
-        />
-        <button onClick={() => handleStatusChange("running")}>Play</button>
-
+        /> */}
+        {/* <button onClick={() => handleStatusChange("running")}>Play</button> */}
         {nodeData.chil &&
           nodeData.chil.length === 0 && ( //afisez delete daca nu are copii
             <button onClick={handleDelete}>-</button>
@@ -91,12 +133,14 @@ const Tree = React.memo(({ nodeData, handleUpdate, parentNode }) => {
       {/*afisez div gol pentru button de add, de vazut*/}
       <div className="children">
         {nodeData.chil.map((chil) => (
-          <Tree
-            key={chil.id}
-            nodeData={chil}
-            handleUpdate={handleUpdate}
-            parentNode={nodeData}
-          /> //pasez si nodul parinte ca sa sterg copil
+          <div className="tree-container">
+            <Tree
+              key={chil.id}
+              nodeData={chil}
+              handleUpdate={handleUpdate}
+              parentNode={nodeData}
+            />
+          </div>
         ))}
         <div className="addChildButton">
           <button onClick={handleAddChild}>+</button>{" "}
